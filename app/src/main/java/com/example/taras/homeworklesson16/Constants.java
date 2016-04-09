@@ -12,5 +12,8 @@ public final class Constants {
                                SIZE_SMALL_TAG = "small",
                                SIZE_MED_TAG = "med",
                                SIZE_FULL_TAG = "full",
-                               SHOW_CAT_FRAGMENT_TAG = "show_cat";
+                               SHOW_CAT_FRAGMENT_TAG = "show_cat",
+                               CAT1_TAG = "cat1",
+                               CAT2_TAG = "cat2",
+                               CAT3_TAG = "cat3";
 }

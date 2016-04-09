@@ -105,4 +105,18 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
         linearLayout.addView(llCatsRow);
         linearLayout.invalidate();
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable(Constants.CAT1_TAG, CashData.mBmCat1);
+        outState.putSerializable(Constants.CAT2_TAG, CashData.mBmCat2);
+        outState.putSerializable(Constants.CAT3_TAG, CashData.mBmCat3);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        CashData.mBmCat1 = (ArrayList<Bitmap>) savedInstanceState.getSerializable(Constants.CAT1_TAG);
+        CashData.mBmCat2 = (ArrayList<Bitmap>) savedInstanceState.getSerializable(Constants.CAT2_TAG);
+        CashData.mBmCat3 = (ArrayList<Bitmap>) savedInstanceState.getSerializable(Constants.CAT3_TAG);
+    }
 }
