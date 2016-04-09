@@ -5,41 +5,26 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public final class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private RecyclerView recyclerView;
-    private RecyclerViewAdapter recyclerViewAdapter;
+    private LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recyclerView = (RecyclerView) findViewById(R.id.rv_AM);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerViewAdapter = new RecyclerViewAdapter(this);
-        recyclerView.setAdapter(recyclerViewAdapter);
-
+        linearLayout = (LinearLayout) findViewById(R.id.ll_AM);
         findViewById(R.id.btn_add_AM).setOnClickListener(this);
     }
 
-    /*private void initCatsRow(ImageView ivCat1, ImageView ivCat2, ImageView ivCat3) {
-        getCat(Constants.SIZE_SMALL_TAG, ivCat1);
-        getCat(Constants.SIZE_SMALL_TAG, ivCat2);
-        getCat(Constants.SIZE_SMALL_TAG, ivCat3);
-    }*/
-
-    private void getCat(String size, final ImageView imageView, final ArrayList<Bitmap> cash) {
+    private void getCat(String size, final ImageView imageView, final ArrayList<Bitmap> cash, boolean initListener) {
         final AsyncRequest<?>[] asyncRequest = new AsyncRequest<?>[1];
 
         if (!checkStatusNetworks()) {
@@ -59,6 +44,7 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             public void onFinish(boolean isSuccess, Bitmap response) {
                 imageView.setImageBitmap(response);
                 cash.add(response);
+                imageView.setOnClickListener(new CatClickListener(MainActivity.this, response));
             }
         };
 
@@ -106,21 +92,17 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View v) {
-        ImageView ivFake = new ImageView(this);
-        getCat(Constants.SIZE_SMALL_TAG, ivFake, CashData.mBmCat1);
-        getCat(Constants.SIZE_SMALL_TAG, ivFake, CashData.mBmCat2);
-        getCat(Constants.SIZE_SMALL_TAG, ivFake, CashData.mBmCat3);
-        //recyclerViewAdapter.notifyDataSetChanged();
-        recyclerViewAdapter.notifyItemInserted(recyclerViewAdapter.getItemCount());
+        LinearLayout llCatsRow = (LinearLayout) getLayoutInflater().inflate(R.layout.row_layout, null);
+        ImageView ivCat1, ivCat2, ivCat3;
+        ivCat1 = (ImageView) llCatsRow.findViewById(R.id.iv_cat1_RL);
+        ivCat2 = (ImageView) llCatsRow.findViewById(R.id.iv_cat2_RL);
+        ivCat3 = (ImageView) llCatsRow.findViewById(R.id.iv_cat3_RL);
 
-        Toast
-                .makeText(this, Integer.toString(recyclerViewAdapter.getItemCount()), Toast.LENGTH_LONG)
-                .show();
-    }
+        getCat(Constants.SIZE_MED_TAG, ivCat1, CashData.mBmCat1, true);
+        getCat(Constants.SIZE_MED_TAG, ivCat2, CashData.mBmCat2, true);
+        getCat(Constants.SIZE_MED_TAG, ivCat3, CashData.mBmCat3, true);
 
-    public void addCatsRow(CustomViewHolder holder) {
-        getCat(Constants.SIZE_SMALL_TAG, holder.ivCat1, CashData.mBmCat1);
-        getCat(Constants.SIZE_SMALL_TAG, holder.ivCat2, CashData.mBmCat2);
-        getCat(Constants.SIZE_SMALL_TAG, holder.ivCat3, CashData.mBmCat3);
+        linearLayout.addView(llCatsRow);
+        linearLayout.invalidate();
     }
 }

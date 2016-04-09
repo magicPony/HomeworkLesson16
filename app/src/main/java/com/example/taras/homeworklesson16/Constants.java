@@ -11,5 +11,6 @@ public final class Constants {
                                KEY_ID = "id",
                                SIZE_SMALL_TAG = "small",
                                SIZE_MED_TAG = "med",
-                               SIZE_FULL_TAG = "full";
+                               SIZE_FULL_TAG = "full",
+                               SHOW_CAT_FRAGMENT_TAG = "show_cat";
 }
