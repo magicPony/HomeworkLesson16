@@ -5,26 +5,35 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
 public final class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private LinearLayout linearLayout;
+    private RecyclerView recyclerView;
+    private RecyclerViewAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        linearLayout = (LinearLayout) findViewById(R.id.ll_AM);
+        recyclerView = (RecyclerView) findViewById(R.id.rv_AM);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        adapter = new RecyclerViewAdapter();
+        recyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
         findViewById(R.id.btn_add_AM).setOnClickListener(this);
     }
 
-    private void getCat(String size, final ImageView imageView, final ArrayList<Bitmap> cash, boolean initListener) {
+    private void getCat(String size, final ArrayList<Bitmap> cash, final boolean notify) {
         final AsyncRequest<?>[] asyncRequest = new AsyncRequest<?>[1];
 
         if (!checkStatusNetworks()) {
@@ -42,9 +51,12 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
             @Override
             public void onFinish(boolean isSuccess, Bitmap response) {
-                imageView.setImageBitmap(response);
+                //imageView.setImageBitmap(response);
                 cash.add(response);
-                imageView.setOnClickListener(new CatClickListener(MainActivity.this, response));
+
+                if (notify) {
+                    adapter.notifyDataSetChanged();
+                }
             }
         };
 
@@ -70,8 +82,6 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
             }
         };
 
-        imageView.setImageResource(0);
-
         asyncRequest[0] = new AsyncRequest<Cat>()
                 .classType(Cat.class)
                 .responseListener(catListener)
@@ -92,18 +102,9 @@ public final class MainActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onClick(View v) {
-        LinearLayout llCatsRow = (LinearLayout) getLayoutInflater().inflate(R.layout.row_layout, null);
-        ImageView ivCat1, ivCat2, ivCat3;
-        ivCat1 = (ImageView) llCatsRow.findViewById(R.id.iv_cat1_RL);
-        ivCat2 = (ImageView) llCatsRow.findViewById(R.id.iv_cat2_RL);
-        ivCat3 = (ImageView) llCatsRow.findViewById(R.id.iv_cat3_RL);
-
-        getCat(Constants.SIZE_MED_TAG, ivCat1, CashData.mBmCat1, true);
-        getCat(Constants.SIZE_MED_TAG, ivCat2, CashData.mBmCat2, true);
-        getCat(Constants.SIZE_MED_TAG, ivCat3, CashData.mBmCat3, true);
-
-        linearLayout.addView(llCatsRow);
-        linearLayout.invalidate();
+        getCat(Constants.SIZE_MED_TAG, CashData.mBmCat1, false);
+        getCat(Constants.SIZE_MED_TAG, CashData.mBmCat2, false);
+        getCat(Constants.SIZE_MED_TAG, CashData.mBmCat3, true);
     }
 
     @Override
